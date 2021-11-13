@@ -26,22 +26,23 @@ def gaussDeriv2D(sigma):
 
 sigma1 = 2.
 Gx, Gy = gaussDeriv2D(sigma1)
-plt.imshow(np.array(Gx), cmap='gray')
-plt.show()
-plt.imshow(np.array(Gy), cmap='gray')
-plt.show()
+# plt.imshow(np.array(Gx), cmap='gray')
+# plt.show()
+# plt.imshow(np.array(Gy), cmap='gray')
+# plt.show()
 
-origImg = io.imread("Images/banana.jpg")
-gxIm = np.float64(ndimage.correlate(origImg, np.array(Gx), mode='nearest'))
+origImg = io.imread("Images/banana.jpg", as_gray=True)
+gxIm = np.float64(ndimage.correlate(origImg, Gx, mode='nearest'))
 gyIm = np.float64(ndimage.correlate(origImg, Gy, mode='nearest'))
 magIm = np.hypot(gxIm, gyIm)
 magIm *= 255.0 / np.max(magIm)
-plt.imshow(gxIm, cmap='gray')
-plt.show()
-plt.imshow(gyIm, cmap='gray')
-plt.show()
-plt.imshow(magIm, cmap='gray')
-plt.show()
+# plt.imshow(gxIm, cmap='gray')
+# plt.show()
+# plt.imshow(gyIm, cmap='gray')
+# plt.show()
+# plt.imshow(magIm, cmap='gray')
+# plt.show()
 
-tIm = magIm > 5
+tIm = magIm > 30
 plt.imshow(tIm, cmap='gray')
+plt.show()
