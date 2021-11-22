@@ -5,12 +5,11 @@
 # Import statements
 import Edge
 import Color
-# import numpy as np
 
 """
 The goal of this project is to be able to create a printable color by number image based on any input image.
-1. Detect the edges in the image the canny edge detector or gaussian derivative masks.
-2. Detect a specified amount of superpixels in the image using skimage.
+1. Detect the edges in the image using gaussian derivative masks and a threshold.
+2. Detect a specified amount of superpixels in the image using skimage's superpixel detection algorithm.
 3. Use an aggregation technique to reduce the amount of superpixels in the image by combining similar colors next to eachother
 so that there are N-different colors where N can be selected by the user. Hard, not sure how to do.
 4. Draw an image using the superpixel borders to draw out edges between different colors.
@@ -19,7 +18,9 @@ so that there are N-different colors where N can be selected by the user. Hard, 
 7. Possibly add tunable thresholds to control how strong the edges are and how strong the colors are?
 """
 
-Edge.detectEdges("Images/banana.jpg")
-Color.detectColors("Images/banana.jpg")
-# Edge.detectEdges("Images/banana.jpg")
-# Color.detectColors("Images/banana.jpg")
+def generateColorByNumberArt(imgPath):
+    contours = Edge.calculateContours(imgPath)
+    img = Color.detectColors(imgPath)
+    Edge.drawContour(img, contours)
+
+generateColorByNumberArt("Images/spiderman.jpg")

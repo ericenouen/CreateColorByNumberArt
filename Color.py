@@ -3,7 +3,6 @@ from skimage import io, feature
 from skimage.segmentation import slic, mark_boundaries
 import numpy as np
 from skimage.color import rgb2hsv
-import Edge
 from scipy import signal, ndimage
 import cv2 as cv
 
@@ -37,26 +36,6 @@ def detectColors(imgPath):
         for j in range(col):
             img[i][j] = listColors[segments_slic[i][j]]
 
-    plt.imshow(img)
-    plt.show()
-    # Calculate Gaussian masks
-    sigma1 = 1.
-    Gx, Gy = Edge.gaussDeriv2D(sigma1)
-
-    # Apply masks to image to get magnitude of change
-    origImg = io.imread(imgPath, as_gray=True)
-    gxIm = np.float64(ndimage.correlate(origImg, Gx, mode='nearest'))
-    gyIm = np.float64(ndimage.correlate(origImg, Gy, mode='nearest'))
-    magIm = np.hypot(gxIm, gyIm)
-    magIm *= 255.0 / np.max(magIm)
-
-    # Threshold detections
-    tIm = magIm > 25
-    tIm = tIm.astype(np.uint8)
-    contours, hierarchy = cv.findContours(tIm,
-                                cv.RETR_LIST,
-                                cv.CHAIN_APPROX_NONE)
-    cv.drawContours(img, contours, -1, (0,0,0), thickness = 2)
     plt.imshow(img)
     plt.show()
     return img
