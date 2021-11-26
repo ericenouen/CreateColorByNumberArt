@@ -10,10 +10,10 @@ import cv2 as cv
 def detectColors(imgPath):
     # https://scikit-image.org/docs/dev/api/skimage.segmentation.html?highlight=slic#skimage.segmentation.slic
     # https://github.com/scikit-image/scikit-image/blob/main/skimage/segmentation/slic_superpixels.py#L110-L384
-    img = io.imread(imgPath).astype(float) / 255.
+    img = np.array(io.imread(imgPath).astype(float) / 255.)
     segments_slic = slic(img,
-                        n_segments = 1000, # The number of labels in the output
-                        compactness = .01, # How much weight to give to space proximity
+                        n_segments = 1000, # The number of labels in the output 5000
+                        compactness = 1, # How much weight to give to space proximity
                         max_iter = 100, # Max number of k-means iterations
                         sigma = .5, # Amount of gaussian smoothing
                         spacing = None, # Voxel spacing along each dimension
@@ -28,16 +28,20 @@ def detectColors(imgPath):
     listColors = matchColors(img, segments_slic)
     fig = plt.figure()
     ax = fig.add_axes([0, 0, 1, 1])
-    ax.imshow(mark_boundaries(img, segments_slic))
+    ax.imshow(mark_boundaries(img, segments_slic, color=(0,0,0)))
     plt.show()
-    getNcolors(img, listColors, 5)
+    uniqueListColors = getNcolors(img, listColors, segments_slic, 5)
     row, col = np.shape(segments_slic)
     for i in range(row):
         for j in range(col):
             img[i][j] = listColors[segments_slic[i][j]]
+            for k in range(len(uniqueListColors)):
+                if all(uniqueListColors[k] == listColors[segments_slic[i][j]]):
+                    segments_slic[i][j] = k
 
     plt.imshow(img)
     plt.show()
+    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
     return img
 
 # Set the color of each pixel to the average of its segment
@@ -59,18 +63,24 @@ def matchColors(img, segments_slic):
             img[i][j] = listColors[segments_slic[i][j]]
     return listColors
 
-def getNcolors(img, listColors, n):
-    # Use connected components ideas applied to color images?
-    # Use a flood fill algorithm somehow?
-    # Measure the distances between all of the pixels and iteratively merge
-    # the closest ones until the select number is acquired?
+# Combine colors and regions based off euclidean color distance
+def getNcolors(img, listColors, segments_slic, n):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
             if euclideanColorDist(listColors[i], listColors[j]) < .2:
+                # boolIndex = segments_slic == j # np.take?
+                # segments_slic[boolIndex] = i # This takes a very long time
                 listColors[j] = listColors[i]
+    return np.unique(listColors, axis=0)
+    # for i in range(len(listColors)):
+    #     segments_slic[]
+    # # listUniqueColors = []
+    # # for i in range(len(listUniqueColors)):
+    # #     segments_slic[]
+    # uniqueListColor = np.unique(listColors)
 
-    # Could probably have a conversation with Dr. Barker about this
 
+# Compute the euclidean distance between two colors
 def euclideanColorDist(color1, color2):
     return np.sqrt(np.power(color1[0] - color2[0], 2) + 
            np.power(color1[1] - color2[1], 2) + 
