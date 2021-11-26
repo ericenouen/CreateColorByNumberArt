@@ -23,4 +23,4 @@ def generateColorByNumberArt(imgPath):
     img = Color.detectColors(imgPath)
     Edge.drawContour(img, contours)
 
-generateColorByNumberArt("Images/spiderman.jpg")
+generateColorByNumberArt("Images/banana.jpg")
