@@ -12,8 +12,8 @@ def detectColors(imgPath):
     # https://github.com/scikit-image/scikit-image/blob/main/skimage/segmentation/slic_superpixels.py#L110-L384
     img = np.array(io.imread(imgPath).astype(float) / 255.)
     segments_slic = slic(img,
-                        n_segments = 5000, # The number of labels in the output 5000
-                        compactness = 1, # How much weight to give to space proximity
+                        n_segments = 1000, # The number of labels in the output 5000
+                        compactness = .1, # How much weight to give to space proximity
                         max_iter = 100, # Max number of k-means iterations
                         sigma = .5, # Amount of gaussian smoothing
                         spacing = None, # Voxel spacing along each dimension
@@ -26,22 +26,41 @@ def detectColors(imgPath):
                         start_label = 0, # First index
                         mask = None) # Where to compute superpixels
     listColors = matchColors(img, segments_slic)
-    fig = plt.figure()
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.imshow(mark_boundaries(img, segments_slic, color=(0,0,0)))
-    plt.show()
-    uniqueListColors = getNcolors(img, listColors, segments_slic, 5)
+    # fig = plt.figure()
+    # ax = fig.add_axes([0, 0, 1, 1])
+    # ax.imshow(mark_boundaries(img, segments_slic))
+    # plt.show()
+    uniqueListColors, listColors = getNcolors(img, listColors, segments_slic, 5)
+    intUnique = (uniqueListColors * 255).astype(int)
+    intColor = (listColors*255).astype(int)
     row, col = np.shape(segments_slic)
     for i in range(row):
         for j in range(col):
-            img[i][j] = listColors[segments_slic[i][j]]
-            for k in range(len(uniqueListColors)):
-                if all(uniqueListColors[k] == listColors[segments_slic[i][j]]):
-                    segments_slic[i][j] = k
+            compareValue = intColor[segments_slic[i][j]]
+            k = np.argmax(compareValue == intUnique, axis = 0)[0]
+            segments_slic[i][j] = k
+            img[i][j] = uniqueListColors[k]
 
-    plt.imshow(img)
-    plt.show()
-    img = mark_boundaries(img, segments_slic, color= (0,0,0), outline_color=(0,0,0)) # np.ones(np.shape(img))
+    # plt.imshow(img)
+    # plt.show()
+    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
+    # img = mark_boundaries(img, segments_slic, color=(0,0,0))
+
+    # Super botched fix for labeling regions
+    i, j = 50, 50
+    while i < row:
+        while j < col:
+            cv.putText(img, str(segments_slic[i][j] + 1), (j, i), cv.FONT_HERSHEY_SIMPLEX, .5, (0,0,0))
+            j += 49
+        j = 0
+        i += 49
+
+    # Need to display numbers on each region which will be pretty difficult
+    # Can try https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.center_of_mass.html
+    # to find the center of each region?
+
+    # Could loop through and draw a number every time the value changes?
+    
     return img
 
 # Set the color of each pixel to the average of its segment
@@ -68,16 +87,8 @@ def getNcolors(img, listColors, segments_slic, n):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
             if euclideanColorDist(listColors[i], listColors[j]) < .2:
-                # boolIndex = segments_slic == j # np.take?
-                # segments_slic[boolIndex] = i # This takes a very long time
                 listColors[j] = listColors[i]
-    return np.unique(listColors, axis=0)
-    # for i in range(len(listColors)):
-    #     segments_slic[]
-    # # listUniqueColors = []
-    # # for i in range(len(listUniqueColors)):
-    # #     segments_slic[]
-    # uniqueListColor = np.unique(listColors)
+    return np.unique(listColors, axis=0), listColors
 
 
 # Compute the euclidean distance between two colors
