@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-from skimage import io, feature
+from skimage import io
 from skimage.segmentation import slic, mark_boundaries
 import numpy as np
-from skimage.color import rgb2hsv
-from scipy import signal, ndimage
+# from skimage.color import rgb2hsv
+# from scipy import signal, ndimage
 import cv2 as cv
 
 # Run the superpixel algorithm on a target image
@@ -30,7 +30,8 @@ def detectColors(imgPath):
     # ax = fig.add_axes([0, 0, 1, 1])
     # ax.imshow(mark_boundaries(img, segments_slic))
     # plt.show()
-    uniqueListColors, listColors = getNcolors(img, listColors, segments_slic, 5)
+
+    uniqueListColors, listColors = getColors(listColors)
     intUnique = (uniqueListColors * 255).astype(int)
     intColor = (listColors*255).astype(int)
     row, col = np.shape(segments_slic)
@@ -84,7 +85,7 @@ def matchColors(img, segments_slic):
     return listColors
 
 # Combine colors and regions based off euclidean color distance
-def getNcolors(img, listColors, segments_slic, n):
+def getColors(listColors):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
             if euclideanColorDist(listColors[i], listColors[j]) < .2:
@@ -97,4 +98,3 @@ def euclideanColorDist(color1, color2):
     return np.sqrt(np.power(color1[0] - color2[0], 2) + 
            np.power(color1[1] - color2[1], 2) + 
            np.power(color1[2] - color2[2], 2))
-           
