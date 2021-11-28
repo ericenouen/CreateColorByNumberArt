@@ -12,7 +12,7 @@ def detectColors(imgPath):
     # https://github.com/scikit-image/scikit-image/blob/main/skimage/segmentation/slic_superpixels.py#L110-L384
     img = np.array(io.imread(imgPath).astype(float) / 255.)
     segments_slic = slic(img,
-                        n_segments = 1000, # The number of labels in the output 5000
+                        n_segments = 5000, # The number of labels in the output 5000
                         compactness = .1, # How much weight to give to space proximity
                         max_iter = 100, # Max number of k-means iterations
                         sigma = .5, # Amount of gaussian smoothing
@@ -43,8 +43,8 @@ def detectColors(imgPath):
 
     # plt.imshow(img)
     # plt.show()
-    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
-    # img = mark_boundaries(img, segments_slic, color=(0,0,0))
+    # img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
+    img = mark_boundaries(img, segments_slic, color=(0,0,0))
 
     # Super botched fix for labeling regions
     i, j = 25, 25
@@ -87,7 +87,7 @@ def matchColors(img, segments_slic):
 def getNcolors(img, listColors, segments_slic, n):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
-            if euclideanColorDist(listColors[i], listColors[j]) < .3:
+            if euclideanColorDist(listColors[i], listColors[j]) < .2:
                 listColors[j] = listColors[i]
     return np.unique(listColors, axis=0), listColors
 
