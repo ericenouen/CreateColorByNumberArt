@@ -23,5 +23,5 @@ def generateColorByNumberArt(imgPath):
     img = Color.detectColors(imgPath)
     Edge.drawContour(img, contours)
 
-generateColorByNumberArt("Images/car.jpg")
+generateColorByNumberArt("Images/spiderman.jpg")
 # Car takes like two minutes, use smaller images

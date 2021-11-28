@@ -5,12 +5,12 @@ import math
 from scipy import signal, ndimage
 import cv2 as cv
 
-# Detect the edges in a target image
-def detectEdges(imgPath):
-    origImg = io.imread(imgPath, as_gray=True)
-    fIm = feature.canny(origImg)
-    plt.imshow(fIm, cmap='gray')
-    plt.show()
+# # Detect the edges in a target image
+# def detectEdges(imgPath):
+#     origImg = io.imread(imgPath, as_gray=True)
+#     fIm = feature.canny(origImg)
+#     plt.imshow(fIm, cmap='gray')
+#     plt.show()
 
 # Compute the gaussian derivative in the x and y directions for the given sigma value.
 def gaussDeriv2D(sigma):

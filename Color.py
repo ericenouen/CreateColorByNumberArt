@@ -47,13 +47,14 @@ def detectColors(imgPath):
     # img = mark_boundaries(img, segments_slic, color=(0,0,0))
 
     # Super botched fix for labeling regions
-    i, j = 50, 50
+    i, j = 25, 25
     while i < row:
         while j < col:
-            cv.putText(img, str(segments_slic[i][j] + 1), (j, i), cv.FONT_HERSHEY_SIMPLEX, .5, (0,0,0))
-            j += 49
+            cv.putText(img, str(segments_slic[i][j] + 1), (j-5, i+5), cv.FONT_HERSHEY_SIMPLEX, .5, (.5,.5,.5))
+            # cv.circle(img, (i,j), radius=0, color=(0, 0, 1), thickness=-1) # Used to determine center of text
+            j += 24
         j = 0
-        i += 49
+        i += 24
 
     # Need to display numbers on each region which will be pretty difficult
     # Can try https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.center_of_mass.html
@@ -86,7 +87,7 @@ def matchColors(img, segments_slic):
 def getNcolors(img, listColors, segments_slic, n):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
-            if euclideanColorDist(listColors[i], listColors[j]) < .2:
+            if euclideanColorDist(listColors[i], listColors[j]) < .3:
                 listColors[j] = listColors[i]
     return np.unique(listColors, axis=0), listColors
 
