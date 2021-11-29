@@ -5,13 +5,6 @@ import math
 from scipy import signal, ndimage
 import cv2 as cv
 
-# # Detect the edges in a target image
-# def detectEdges(imgPath):
-#     origImg = io.imread(imgPath, as_gray=True)
-#     fIm = feature.canny(origImg)
-#     plt.imshow(fIm, cmap='gray')
-#     plt.show()
-
 # Compute the gaussian derivative in the x and y directions for the given sigma value.
 def gaussDeriv2D(sigma):
     Gx = []
@@ -26,7 +19,7 @@ def gaussDeriv2D(sigma):
         Gy.append(constantY * exponent)
     return Gx, Gy
 
-def calculateContours(imgPath):
+def calculateContours(imgPath, edgeThresh):
     # Calculate Gaussian masks
     sigma1 = 1.
     Gx, Gy = gaussDeriv2D(sigma1)
@@ -39,14 +32,17 @@ def calculateContours(imgPath):
     magIm *= 255.0 / np.max(magIm)
 
     # Threshold detections
-    tIm = magIm > 50
+    tIm = magIm > edgeThresh # 50 is default
     tIm = tIm.astype(np.uint8)
+
+    # Use border following to calculate edges from the binary image
     contours, hierarchy = cv.findContours(tIm,
                                 cv.RETR_LIST,
                                 cv.CHAIN_APPROX_NONE)
     return contours
 
 def drawContour(img, contours):
-    cv.drawContours(img, contours, -1, (0,0,0), thickness = 2)
-    plt.imshow(img)
-    plt.show()
+    img = cv.drawContours(img, contours, -1, (0,0,0), thickness = 2)
+    return img
+    # plt.imshow(img)
+    # plt.show()

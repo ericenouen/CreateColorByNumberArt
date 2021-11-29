@@ -5,6 +5,8 @@
 # Import statements
 import Edge
 import Color
+from skimage import io
+import numpy as np
 
 """
 The goal of this project is to be able to create a printable color by number image based on any input image.
@@ -17,12 +19,11 @@ The goal of this project is to be able to create a printable color by number ima
 7. Possibly add tunable thresholds to control how strong the edges are and how strong the colors are?
 """
 
-def generateColorByNumberArt(imgPath):
-    contours = Edge.calculateContours(imgPath)
-    img = Color.detectColors(imgPath)
-    Edge.drawContour(img, contours)
-
-generateColorByNumberArt("Images/cat.jpg")
+def generateColorByNumberArt(imgPath, edgeThresh, pixelNum, colorThresh, versionNumber):
+    contours = Edge.calculateContours(imgPath, edgeThresh)
+    img = Color.detectColors(imgPath, pixelNum, colorThresh)
+    img = Edge.drawContour(img, contours)
+    io.imsave(imgPath.split('.')[0] + "_output" + str(versionNumber) + ".jpg", (255 * img).astype(np.uint8))
 # Car takes like two minutes, use smaller images
 
 # Printing out a key for each color

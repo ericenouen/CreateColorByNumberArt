@@ -7,12 +7,12 @@ import numpy as np
 import cv2 as cv
 
 # Run the superpixel algorithm on a target image
-def detectColors(imgPath):
+def detectColors(imgPath, pixelNum, colorThresh):
     # https://scikit-image.org/docs/dev/api/skimage.segmentation.html?highlight=slic#skimage.segmentation.slic
     # https://github.com/scikit-image/scikit-image/blob/main/skimage/segmentation/slic_superpixels.py#L110-L384
     img = np.array(io.imread(imgPath).astype(float) / 255.)
     segments_slic = slic(img,
-                        n_segments = 5000, # The number of labels in the output 5000
+                        n_segments = pixelNum, # The number of labels in the output
                         compactness = .1, # How much weight to give to space proximity
                         max_iter = 100, # Max number of k-means iterations
                         sigma = .5, # Amount of gaussian smoothing
@@ -31,7 +31,7 @@ def detectColors(imgPath):
     # ax.imshow(mark_boundaries(img, segments_slic))
     # plt.show()
 
-    uniqueListColors, listColors = getColors(listColors)
+    uniqueListColors, listColors = getColors(listColors, colorThresh)
     intUnique = (uniqueListColors * 255).astype(int)
     intColor = (listColors*255).astype(int)
     row, col = np.shape(segments_slic)
@@ -44,8 +44,8 @@ def detectColors(imgPath):
 
     # plt.imshow(img)
     # plt.show()
-    # img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
-    img = mark_boundaries(img, segments_slic, color=(0,0,0))
+    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
+    # img = mark_boundaries(img, segments_slic, color=(0,0,0))
 
     # Super botched fix for labeling regions
     i, j = 25, 25
@@ -85,13 +85,12 @@ def matchColors(img, segments_slic):
     return listColors
 
 # Combine colors and regions based off euclidean color distance
-def getColors(listColors):
+def getColors(listColors, colorThresh):
     for i in range(len(listColors)):
         for j in range(len(listColors)):
-            if euclideanColorDist(listColors[i], listColors[j]) < .2:
+            if euclideanColorDist(listColors[i], listColors[j]) < colorThresh: # Default .2
                 listColors[j] = listColors[i]
     return np.unique(listColors, axis=0), listColors
-
 
 # Compute the euclidean distance between two colors
 def euclideanColorDist(color1, color2):
