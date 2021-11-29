@@ -97,4 +97,36 @@ def euclideanColorDist(color1, color2):
     return np.sqrt(np.power(color1[0] - color2[0], 2) + 
            np.power(color1[1] - color2[1], 2) + 
            np.power(color1[2] - color2[2], 2))
-           
+
+def getKey(imgPath) :
+    img = np.array(io.imread(imgPath).astype(float) / 255.)
+    segments_slic = slic(img,
+                        n_segments = 1000, # The number of labels in the output 5000
+                        compactness = .1, # How much weight to give to space proximity
+                        max_iter = 100, # Max number of k-means iterations
+                        sigma = .5, # Amount of gaussian smoothing
+                        spacing = None, # Voxel spacing along each dimension
+                        multichannel = True, # Treat as multiple channels
+                        convert2lab = False, # Convert to Lab colorspace before
+                        enforce_connectivity = True, # Connect generated segments
+                        min_size_factor = 0.5, # Min. segment size to remove
+                        max_size_factor = 3, # Max segment size
+                        slic_zero = False, # Zero parameter version
+                        start_label = 0, # First index
+                        mask = None) # Where to compute superpixels
+    listColors = matchColors(img, segments_slic)
+    # Get unique colors and convert them to int format
+    uniqueListColors, listColors = getNcolors(img, listColors, segments_slic, 5)
+    intUnique = (uniqueListColors * 255).astype(int)
+    numUnique = np.shape(intUnique)[0]
+    currentNumber = 1
+    colIndex = 0
+    keyImg = np.full((20, 35 * numUnique, 3), 255)
+    for color in intUnique:
+        keyImg[:, colIndex] = (0,0,0) 
+        keyImg[:, colIndex + 1:colIndex + 19] = color
+        keyImg[:, colIndex + 19] = (0,0,0)
+        cv.putText(keyImg, str(currentNumber), (colIndex + 24,10), cv.FONT_HERSHEY_SIMPLEX, .3, (0,0,0))
+        currentNumber += 1
+        colIndex += 35
+    return keyImg

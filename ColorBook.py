@@ -22,6 +22,7 @@ def generateColorByNumberArt(imgPath):
     contours = Edge.calculateContours(imgPath)
     img = Color.detectColors(imgPath)
     Edge.drawContour(img, contours)
+    keyImg = Color.getKey(imgPath)
 
 generateColorByNumberArt("Images/spiderman.jpg")
 # Car takes like two minutes, use smaller images
