@@ -19,16 +19,16 @@ The goal of this project is to be able to create a printable color by number ima
 7. Possibly add tunable thresholds to control how strong the edges are and how strong the colors are?
 """
 
-def generateColorByNumberArt(imgPath, edgeThresh, pixelNum, colorThresh, versionNumber):
+def generateColorByNumberArt(imgPath, outputPath, edgeThresh, pixelNum, colorThresh, versionNumber):
     contours = Edge.calculateContours(imgPath, edgeThresh)
     img, keyIm, filled = Color.detectColors(imgPath, pixelNum, colorThresh)
-    
+
     img = Edge.drawContour(img, contours)
     filled = Edge.drawContour(filled, contours)
 
-    io.imsave(imgPath.split('.')[0] + "_output" + str(versionNumber) + ".jpg", (255 * img).astype(np.uint8))
-    io.imsave(imgPath.split('.')[0] + "_key" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
-    io.imsave(imgPath.split('.')[0] + "_filled" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
+    io.imsave(outputPath.split('.')[0] + "_output" + str(versionNumber) + ".jpg", (255 * img).astype(np.uint8))
+    io.imsave(outputPath.split('.')[0] + "_key" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
+    io.imsave(outputPath.split('.')[0] + "_filled" + str(versionNumber) + ".jpg", (255 * filled).astype(np.uint8))
 # Car takes like two minutes, use smaller images
 
 # Printing out a key for each color

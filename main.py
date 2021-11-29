@@ -24,7 +24,7 @@ div_key = Div(text="", width=1000, height=1000, sizing_mode="scale_both")
 
 def computeImage():
     global versionNumber
-    generateColorByNumberArt("CreateColorByNumberArt\\static\\Input\\" + file_input.value, edge_slider.value, pixel_slider.value, color_slider.value, versionNumber)
+    generateColorByNumberArt("CreateColorByNumberArt\\static\\Input\\" + file_input.value, "CreateColorByNumberArt\\static\\" + file_input.value, edge_slider.value, pixel_slider.value, color_slider.value, versionNumber)
     div_image.text = "<img src='" + "CreateColorByNumberArt\\static\\" + file_input.value.split('.')[0] + "_output" + str(versionNumber) + ".jpg' alt=\"div_image\">"
     div_key.text = "<img src='" + "CreateColorByNumberArt\\static\\" + file_input.value.split('.')[0] + "_key" + str(versionNumber) + ".jpg' alt=\"div_image\">"
     versionNumber += 1
