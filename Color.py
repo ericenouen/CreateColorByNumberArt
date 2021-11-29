@@ -95,12 +95,12 @@ def getKey(intUnique):
     numUnique = np.shape(intUnique)[0]
     currentNumber = 1
     colIndex = 0
-    keyImg = np.full((20, 35 * numUnique, 3), 255)
+    keyImg = np.full((20, 40 * numUnique, 3), 255)
     for color in intUnique:
         keyImg[:, colIndex] = (0,0,0) 
         keyImg[:, colIndex + 1:colIndex + 19] = color
         keyImg[:, colIndex + 19] = (0,0,0)
         cv.putText(keyImg, str(currentNumber), (colIndex + 24,10), cv.FONT_HERSHEY_SIMPLEX, .3, (0,0,0))
         currentNumber += 1
-        colIndex += 35
+        colIndex += 40
     return keyImg
