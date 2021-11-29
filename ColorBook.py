@@ -21,9 +21,14 @@ The goal of this project is to be able to create a printable color by number ima
 
 def generateColorByNumberArt(imgPath, edgeThresh, pixelNum, colorThresh, versionNumber):
     contours = Edge.calculateContours(imgPath, edgeThresh)
-    img = Color.detectColors(imgPath, pixelNum, colorThresh)
+    img, keyIm, filled = Color.detectColors(imgPath, pixelNum, colorThresh)
+    
     img = Edge.drawContour(img, contours)
+    filled = Edge.drawContour(filled, contours)
+
     io.imsave(imgPath.split('.')[0] + "_output" + str(versionNumber) + ".jpg", (255 * img).astype(np.uint8))
+    io.imsave(imgPath.split('.')[0] + "_key" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
+    io.imsave(imgPath.split('.')[0] + "_filled" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
 # Car takes like two minutes, use smaller images
 
 # Printing out a key for each color

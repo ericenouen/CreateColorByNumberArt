@@ -26,10 +26,6 @@ def detectColors(imgPath, pixelNum, colorThresh):
                         start_label = 0, # First index
                         mask = None) # Where to compute superpixels
     listColors = matchColors(img, segments_slic)
-    # fig = plt.figure()
-    # ax = fig.add_axes([0, 0, 1, 1])
-    # ax.imshow(mark_boundaries(img, segments_slic))
-    # plt.show()
 
     uniqueListColors, listColors = getColors(listColors, colorThresh)
     intUnique = (uniqueListColors * 255).astype(int)
@@ -42,17 +38,14 @@ def detectColors(imgPath, pixelNum, colorThresh):
             segments_slic[i][j] = k
             img[i][j] = uniqueListColors[k]
 
-    # plt.imshow(img)
-    # plt.show()
     img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
-    # img = mark_boundaries(img, segments_slic, color=(0,0,0))
+    imgFilled = mark_boundaries(img, segments_slic, color=(0,0,0))
 
     # Super botched fix for labeling regions
     i, j = 25, 25
     while i < row:
         while j < col:
             cv.putText(img, str(segments_slic[i][j] + 1), (j-5, i+5), cv.FONT_HERSHEY_SIMPLEX, .5, (.5,.5,.5))
-            # cv.circle(img, (i,j), radius=0, color=(0, 0, 1), thickness=-1) # Used to determine center of text
             j += 24
         j = 0
         i += 24
@@ -62,8 +55,8 @@ def detectColors(imgPath, pixelNum, colorThresh):
     # to find the center of each region?
 
     # Could loop through and draw a number every time the value changes?
-    
-    return img
+    keyIm = getKey(intUnique)
+    return img, keyIm, imgFilled
 
 # Set the color of each pixel to the average of its segment
 def matchColors(img, segments_slic):
@@ -98,26 +91,7 @@ def euclideanColorDist(color1, color2):
            np.power(color1[1] - color2[1], 2) + 
            np.power(color1[2] - color2[2], 2))
 
-def getKey(imgPath) :
-    img = np.array(io.imread(imgPath).astype(float) / 255.)
-    segments_slic = slic(img,
-                        n_segments = 1000, # The number of labels in the output 5000
-                        compactness = .1, # How much weight to give to space proximity
-                        max_iter = 100, # Max number of k-means iterations
-                        sigma = .5, # Amount of gaussian smoothing
-                        spacing = None, # Voxel spacing along each dimension
-                        multichannel = True, # Treat as multiple channels
-                        convert2lab = False, # Convert to Lab colorspace before
-                        enforce_connectivity = True, # Connect generated segments
-                        min_size_factor = 0.5, # Min. segment size to remove
-                        max_size_factor = 3, # Max segment size
-                        slic_zero = False, # Zero parameter version
-                        start_label = 0, # First index
-                        mask = None) # Where to compute superpixels
-    listColors = matchColors(img, segments_slic)
-    # Get unique colors and convert them to int format
-    uniqueListColors, listColors = getColors(img, listColors, segments_slic, 5)
-    intUnique = (uniqueListColors * 255).astype(int)
+def getKey(intUnique):
     numUnique = np.shape(intUnique)[0]
     currentNumber = 1
     colIndex = 0
