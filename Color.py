@@ -38,8 +38,8 @@ def detectColors(imgPath, pixelNum, colorThresh):
             segments_slic[i][j] = k
             img[i][j] = uniqueListColors[k]
 
-    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
     imgFilled = mark_boundaries(img, segments_slic, color=(0,0,0))
+    img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
 
     # Super botched fix for labeling regions
     i, j = 25, 25
