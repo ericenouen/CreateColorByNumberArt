@@ -1,15 +1,10 @@
-import matplotlib.pyplot as plt
 from skimage import io
 from skimage.segmentation import slic, mark_boundaries
 import numpy as np
-# from skimage.color import rgb2hsv
-# from scipy import signal, ndimage
 import cv2 as cv
 
-# Run the superpixel algorithm on a target image
+# Run the color detection algorithm on a target image
 def detectColors(imgPath, pixelNum, colorThresh):
-    # https://scikit-image.org/docs/dev/api/skimage.segmentation.html?highlight=slic#skimage.segmentation.slic
-    # https://github.com/scikit-image/scikit-image/blob/main/skimage/segmentation/slic_superpixels.py#L110-L384
     img = np.array(io.imread(imgPath).astype(float) / 255.)
     segments_slic = slic(img,
                         n_segments = pixelNum, # The number of labels in the output
@@ -26,8 +21,9 @@ def detectColors(imgPath, pixelNum, colorThresh):
                         start_label = 0, # First index
                         mask = None) # Where to compute superpixels
     listColors = matchColors(img, segments_slic)
-
     uniqueListColors, listColors = getColors(listColors, colorThresh)
+
+    # Merge segments together based off color similarity
     intUnique = (uniqueListColors * 255).astype(int)
     intColor = (listColors*255).astype(int)
     row, col = np.shape(segments_slic)
@@ -41,7 +37,7 @@ def detectColors(imgPath, pixelNum, colorThresh):
     imgFilled = mark_boundaries(img, segments_slic, color=(0,0,0))
     img = mark_boundaries(np.ones(np.shape(img)), segments_slic, color=(0,0,0))
 
-    # Super botched fix for labeling regions
+    # Label Regions
     i, j = 25, 25
     while i < row:
         while j < col:
@@ -50,11 +46,6 @@ def detectColors(imgPath, pixelNum, colorThresh):
         j = 0
         i += 24
 
-    # Need to display numbers on each region which will be pretty difficult
-    # Can try https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.center_of_mass.html
-    # to find the center of each region?
-
-    # Could loop through and draw a number every time the value changes?
     keyIm = getKey(intUnique)
     return img, keyIm, imgFilled
 
@@ -91,6 +82,7 @@ def euclideanColorDist(color1, color2):
            np.power(color1[1] - color2[1], 2) + 
            np.power(color1[2] - color2[2], 2))
 
+# Get the color key for the image
 def getKey(intUnique):
     numUnique = np.shape(intUnique)[0]
     currentNumber = 1

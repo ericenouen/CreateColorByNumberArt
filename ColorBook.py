@@ -16,7 +16,6 @@ The goal of this project is to be able to create a printable color by number ima
 4. Draw an image using the superpixel borders to draw out edges between different colors.
 5. Label each superpixel segment with its corresponding index and add a key at the bottom of the paper.
 6. Overlay the emboldened edges detected earlier as black edges to give the image more detail.
-7. Possibly add tunable thresholds to control how strong the edges are and how strong the colors are?
 """
 
 def generateColorByNumberArt(imgPath, outputPath, edgeThresh, pixelNum, colorThresh, versionNumber):
@@ -29,16 +28,3 @@ def generateColorByNumberArt(imgPath, outputPath, edgeThresh, pixelNum, colorThr
     io.imsave(outputPath.split('.')[0] + "_output" + str(versionNumber) + ".jpg", (255 * img).astype(np.uint8))
     io.imsave(outputPath.split('.')[0] + "_key" + str(versionNumber) + ".jpg", keyIm.astype(np.uint8))
     io.imsave(outputPath.split('.')[0] + "_filled" + str(versionNumber) + ".jpg", (255 * filled).astype(np.uint8))
-# Car takes like two minutes, use smaller images
-
-# Printing out a key for each color
-# Try to implement visualization dashboard with Bokeh to add sliders for edges, # superpixels, # colors
-# Add some method to save/print the image and key
-
-# Try to fix the numbers to print in a more visually appealing way
-# Gather more test images and then run the algorithm to get examples
-
-# Look into issues, things we would want to improve
-
-# Finish Presentation Slides
-# Finish Project Report

@@ -1,8 +1,7 @@
-import matplotlib.pyplot as plt
-from skimage import io, feature
+from skimage import io
 import numpy as np
 import math
-from scipy import signal, ndimage
+from scipy import ndimage
 import cv2 as cv
 
 # Compute the gaussian derivative in the x and y directions for the given sigma value.
@@ -41,8 +40,7 @@ def calculateContours(imgPath, edgeThresh):
                                 cv.CHAIN_APPROX_NONE)
     return contours
 
+# Draw edges on the image
 def drawContour(img, contours):
     img = cv.drawContours(img, contours, -1, (0,0,0), thickness = 2)
     return img
-    # plt.imshow(img)
-    # plt.show()
